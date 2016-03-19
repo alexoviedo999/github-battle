@@ -1,32 +1,49 @@
 var React = require('react');
-var transparentBg = require('../styles').transparentBg;
+var Prompt = require('../components/Prompt');
 
 var PromptContainer = React.createClass({
+	contextTypes: {
+		router: React.PropTypes.object.isRequired
+	},
+	getInitialState: function () {
+		return {
+			username: ''
+		}
+	},
+	handleOnUpdateUser: function (e) {
+		this.setState({
+			username: e.target.value
+		});
+	},
+	handleOnSubmitUser: function (e) {
+		e.preventDefault();
+		var username = this.state.username;
+		this.setState({
+			username: ''
+		});
+
+		if (this.props.routeParams.playerOne) {
+			console.log(this.context);
+			this.context.router.push({
+				pathname: '/battle',
+				query: {
+					playerOne: this.props.routeParams.playerOne,
+					playerTwo: this.state.username
+				}
+			});
+		} else {
+			this.context.router.push('/playerTwo/' + this.state.username);
+			console.log(this.context);
+		}
+	},
 	render: function () {
 		console.log(this);
 		return (
-			<div className="jumbotron col-sm-6 col-sm-offset-3 text-center" style={transparentBg}>
-		      <h1>{this.props.route.header}</h1>
-		      <div className="col-sm-12">
-		        <form >
-		          <div className="form-group">
-		            <input
-		              className='form-control'
-
-		              placeholder='Github Username'
-		              type='text'
-		               />
-		          </div>
-		          <div className="form-group col-sm-4 col-sm-offset-4">
-		            <button
-		              className="btn btn-block btn-success"
-		              type="submit">
-		                Continue
-		            </button>
-		          </div>
-		        </form>
-		      </div>
-		    </div>
+			<Prompt
+			 	onSubmitUser={this.handleOnSubmitUser}
+				onUpdateUser={this.handleOnUpdateUser}
+				header={this.props.route.header}
+				username={this.state.username} />
 		)
 	}
 });
